@@ -22,11 +22,47 @@ npm run start
 
 ## Endpionts
 
-/songs
+
+? = optional
+
+
+
+### /songs
+
 Method: GET
-Parameters:    ? = optional
+
+Parameters:
+
     page?: number
+
 Response:
+
+    [
+        {
+            name: string
+            date: JJJJ-MM-DD
+            genre: string
+            artists: [
+                {
+                    name: string
+                    url: string
+                }
+            ]
+        }
+    ]
+
+### /search
+
+Method: GET
+
+Parameters:
+
+    genre?: number
+    mood?: number
+    search?: string
+
+Response:
+
     [
         {
             name: string
