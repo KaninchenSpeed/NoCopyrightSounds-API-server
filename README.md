@@ -1,6 +1,6 @@
 # NoCopyrightSounds-API-server
 
-for using my [NCS-API library](https://github.com/KaninchenSpeed/NoCopyrightSounds-API-server.git) in other programming languages
+for using my [NCS-API library](https://github.com/KaninchenSpeed/NoCopyrightSounds-API) in other programming languages
 
 
 ## Installation
