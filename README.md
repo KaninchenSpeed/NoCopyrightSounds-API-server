@@ -7,18 +7,7 @@ for using my [NCS-API library](https://github.com/KaninchenSpeed/NoCopyrightSoun
 
 you need NodeJS for this
 
-clone this repository `
-git clone https://github.com/KaninchenSpeed/NoCopyrightSounds-API-server.git
-`
-
-
-build `
-npm run build
-`
-
-run `
-npm run start
-`
+run `npx ncs-api-server`
 
 ## Endpionts
 
