@@ -9,7 +9,8 @@ var last_refresh = 0
 const app = express()
 const client = new ncs.Client({
     cache_path: 'cache.json',
-    use_cache: true
+    use_cache: true,
+    detailed_log: true
 })
 client.getCache()?.addEventListener('ready', () => ready = true)
 
@@ -66,3 +67,4 @@ app.get<null, ncs.Artist_info, null, { url: string }>('/artist', async (req, res
 
 app.listen(3355)
 console.log('started surcessfully')
+console.log(process.argv)
