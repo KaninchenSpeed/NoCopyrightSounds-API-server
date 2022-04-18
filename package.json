@@ -1,6 +1,6 @@
 {
   "name": "ncs-api-server",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "For using my NoCopyrightSounds-API library on the web and in other programming languages",
   "main": "dist/main.js",
   "bin": {
