@@ -1,40 +1,67 @@
-import * as express from 'express'
-import * as cors from 'cors'
+import express from 'express'
+import cors from 'cors'
 import * as ncs from 'nocopyrightsounds-api'
 
 
+var ready = false
+var last_refresh = 0
+
 const app = express()
+const client = new ncs.Client({
+    cache_path: 'cache.json',
+    use_cache: true
+})
+client.getCache()?.addEventListener('ready', () => ready = true)
+
+setInterval(() => {
+    last_refresh++
+}, 1000)
 
 app.use(cors({
     origin: '*'
 }))
 
 
-
 app.get('/', (req, res) => {
     res.json({
-        version: 1
+        version: 2,
+        ready
     })
 })
 
-
-app.get('/songs', (req, res) => {
-    ncs.getMusic(Number(req.query.page)).then(songs => {
+app.get<null, ncs.Song[], null, { page: number }>('/songs', async (req, res) => {
+    if (last_refresh >= 1800) {
+        last_refresh = 0
+        await client.getCache()?.checkForNew()
+    }
+    client.getSongs(Number(req.query.page ?? 1)).then(songs => {
         res.json(songs)
     })
 })
 
-app.get('/search', (req, res) => {
+app.get<null, ncs.Song[], null, { genre: number, mood: number, search: string, page: number }>('/search', async (req, res) => {
     const filter: ncs.Filter = {
-        genre: Number(req.query.genre),
-        mood: Number(req.query.mood),
-        search: String(req.query.q)
+        genre: req.query.genre ? Number(req.query.genre) : undefined,
+        mood: req.query.mood ? Number(req.query.mood) : undefined,
+        search: req.query.search ? String(req.query.search) : undefined
     }
-    ncs.search(filter)
+    try {
+        const resu = await ncs.search(filter, req.query.page ? Number(req.query.page) : 1)
+        res.json(resu)
+    } catch (err) {
+        res.json([])
+    }
 })
 
-
-
+app.get<null, ncs.Artist_info, null, { url: string }>('/artist', async (req, res) => {
+    try {
+        const url = decodeURIComponent(req.query.url)
+        console.log(url)
+        res.json(await ncs.getArtistInfo(url))
+    } catch (err) {
+        console.error(err)
+    }
+})
 
 
 app.listen(3355)

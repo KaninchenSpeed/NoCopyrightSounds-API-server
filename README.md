@@ -29,50 +29,89 @@ npm run start
 
 ### /songs
 
-Method: GET
+Method: `GET`
 
 Parameters:
-
-    page?: number
+```ts
+interface SongsReq {
+    page?: number // starts at 1
+}
+```
 
 Response:
-
-    [
-        {
-            name: string
-            date: JJJJ-MM-DD
-            genre: string
-            artists: [
-                {
-                    name: string
-                    url: string
-                }
-            ]
-        }
-    ]
+```ts
+interface Song {
+    name: string
+    url: string
+    date: JJJJ-MM-DD
+    genre: string
+    artists: {
+        name: string
+        url: string
+    }[]
+    imageUrl: string
+    songUrl: string
+    tags: {
+        name: string
+        color: { r: number, g: number, b: number }
+        mood: number | null
+    }[]
+}[] // array of songs
+```
 
 ### /search
 
-Method: GET
+Method: `GET`
 
 Parameters:
-
+```ts
+interface SearchReq {
+    page: number // starts at 1
     genre?: number
     mood?: number
     search?: string
+}
+```
 
 Response:
+```ts
+interface Song {
+    name: string
+    url: string
+    date: JJJJ-MM-DD
+    genre: string
+    artists: {
+        name: string
+        url: string
+    }[]
+    imageUrl: string
+    songUrl: string
+    tags: {
+        name: string
+        color: { r: number, g: number, b: number }
+        mood: number | null
+    }[]
+}[] // array of songs
+```
 
-    [
-        {
-            name: string
-            date: JJJJ-MM-DD
-            genre: string
-            artists: [
-                {
-                    name: string
-                    url: string
-                }
-            ]
-        }
-    ]
+### /artist
+
+Method: `GET`
+
+Request:
+```ts
+interface ArtistReq {
+    url: string // escaped url with encodeURIComponent in js | like: encodeURIComponent("/artist/749/felix-samuel")
+}
+```
+
+Response:
+```ts
+interface Artist_Info {
+    name: string
+    url: string
+    genres: string[]
+    featured: Song[] // as mentioned before
+    songs: Song[]
+}
+```
