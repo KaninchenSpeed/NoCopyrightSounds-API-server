@@ -1,20 +1,19 @@
 # NoCopyrightSounds-API-server
 
-for using my [NCS-API library](https://github.com/KaninchenSpeed/NoCopyrightSounds-API) in other programming languages
+for using my [NCS-API library](https://github.com/KaninchenSpeed/NoCopyrightSounds-API) in other programming languages and the web
 
 
 ## Installation
 
-you need NodeJS for this
+you need [NodeJS](https://nodejs.org) for this
 
 run `npx ncs-api-server`
 
 ## Endpionts
 
-
 ? = optional
 
-
+declarations in typescript format
 
 ### /songs
 

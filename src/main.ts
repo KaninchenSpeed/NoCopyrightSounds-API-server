@@ -65,3 +65,4 @@ app.get<null, ncs.Artist_info, null, { url: string }>('/artist', async (req, res
 
 
 app.listen(3355)
+console.log('started surcessfully')
