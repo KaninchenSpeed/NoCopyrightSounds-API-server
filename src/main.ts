@@ -64,7 +64,8 @@ app.get<null, ncs.Artist_info, null, { url: string }>('/artist', async (req, res
     }
 })
 
-
-app.listen(3355)
+if (process.argv.length < 3 || !process.argv[2]) {
+    console.error('please add a port! (ncs_api_server 3355)')
+}
+app.listen(Number(process.argv[2]))
 console.log('started surcessfully')
-console.log(process.argv)
