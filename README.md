@@ -7,7 +7,8 @@ for using my [NCS-API library](https://github.com/KaninchenSpeed/NoCopyrightSoun
 
 you need [NodeJS](https://nodejs.org) for this
 
-run `npx ncs-api-server`
+install with `npm i -g ncs-api-server` (may require root/sudo on linux)
+start with `ncs_api_server`
 
 ## Endpionts
 
