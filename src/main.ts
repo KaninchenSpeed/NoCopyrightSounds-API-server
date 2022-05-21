@@ -61,6 +61,7 @@ app.get<null, ncs.Artist_info, null, { url: string }>('/artist', async (req, res
         res.json(await ncs.getArtistInfo(url))
     } catch (err) {
         console.error(err)
+        res.status(400).json({ error: 'artist not found' })
     }
 })
 
