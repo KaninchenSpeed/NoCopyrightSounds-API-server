@@ -2,6 +2,9 @@
 
 for using my [NCS-API library](https://github.com/KaninchenSpeed/NoCopyrightSounds-API) in other programming languages and the web
 
+## Note
+This package uses gzip with the [compression package](https://www.npmjs.com/package/compression) for compression on all endpoints.
+
 
 ## Installation
 
@@ -22,30 +25,34 @@ Method: `GET`
 
 Parameters:
 ```ts
-interface SongsReq {
+interface SongsReqest {
     page?: number // starts at 1
+    all?: boolean // send all songs from cache
 }
 ```
 
 Response:
 ```ts
-interface Song {
-    name: string
-    url: string
-    date: JJJJ-MM-DD
-    genre: string
-    artists: {
+interface SongsResponse {
+    lastRefresh: number // time since last cache refresh in seconds
+    songs: Song {
         name: string
         url: string
-    }[]
-    imageUrl: string
-    songUrl: string
-    tags: {
-        name: string
-        color: { r: number, g: number, b: number }
-        mood: number | null
-    }[]
-}[] // array of songs
+        date: JJJJ-MM-DD
+        genre: string
+        artists: {
+            name: string
+            url: string
+        }[]
+        imageUrl: string
+        songUrl: string
+        tags: {
+            name: string
+            color: { r: number, g: number, b: number }
+            mood: number | null
+        }[]
+    }[] // array of songs
+}
 ```
 
 ### /search
@@ -54,7 +61,7 @@ Method: `GET`
 
 Parameters:
 ```ts
-interface SearchReq {
+interface SearchReqest {
     page: number // starts at 1
     genre?: number
     mood?: number
@@ -64,23 +71,26 @@ interface SearchReq {
 
 Response:
 ```ts
-interface Song {
-    name: string
-    url: string
-    date: JJJJ-MM-DD
-    genre: string
-    artists: {
+interface SongsResponse {
+    lastRefresh: number // time since last cache refresh in seconds
+    songs: Song {
         name: string
         url: string
-    }[]
-    imageUrl: string
-    songUrl: string
-    tags: {
-        name: string
-        color: { r: number, g: number, b: number }
-        mood: number | null
-    }[]
-}[] // array of songs
+        date: JJJJ-MM-DD
+        genre: string
+        artists: {
+            name: string
+            url: string
+        }[]
+        imageUrl: string
+        songUrl: string
+        tags: {
+            name: string
+            color: { r: number, g: number, b: number }
+            mood: number | null
+        }[]
+    }[] // array of songs
+}
 ```
 
 ### /artist
@@ -100,7 +110,39 @@ interface Artist_Info {
     name: string
     url: string
     genres: string[]
-    featured: Song[] // as mentioned before
-    songs: Song[]
+    featured: Song {
+        name: string
+        url: string
+        date: JJJJ-MM-DD
+        genre: string
+        artists: {
+            name: string
+            url: string
+        }[]
+        imageUrl: string
+        songUrl: string
+        tags: {
+            name: string
+            color: { r: number, g: number, b: number }
+            mood: number | null
+        }[]
+    }[]
+    songs: Song {
+        name: string
+        url: string
+        date: JJJJ-MM-DD
+        genre: string
+        artists: {
+            name: string
+            url: string
+        }[]
+        imageUrl: string
+        songUrl: string
+        tags: {
+            name: string
+            color: { r: number, g: number, b: number }
+            mood: number | null
+        }[]
+    }[]
 }
 ```

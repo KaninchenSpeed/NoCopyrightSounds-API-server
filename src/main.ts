@@ -1,12 +1,21 @@
 import express from 'express'
 import cors from 'cors'
+import compression from 'compression'
 import * as ncs from 'nocopyrightsounds-api'
 
+interface JsonError {
+    error: string
+}
 
-var ready = false
-var last_refresh = 0
+interface SongResponse {
+    songs: ncs.Song[]
+    lastRefresh: number
+}
 
-const app = express()
+let ready = false
+let lastRefresh = 0
+let refreshing = false
+
 const client = new ncs.Client({
     cache_path: 'cache.json',
     use_cache: true,
@@ -15,13 +24,23 @@ const client = new ncs.Client({
 client.getCache()?.addEventListener('ready', () => ready = true)
 
 setInterval(() => {
-    last_refresh++
+    lastRefresh++
 }, 1000)
+
+const refesh = async () => {
+    if (refreshing || lastRefresh < 1800) return
+    refreshing = true
+    await client.getCache()?.checkForNew()
+    lastRefresh = 0
+    refreshing = false
+}
+
+const app = express()
 
 app.use(cors({
     origin: '*'
 }))
-
+app.use(compression())
 
 app.get('/', (req, res) => {
     res.json({
@@ -30,17 +49,28 @@ app.get('/', (req, res) => {
     })
 })
 
-app.get<null, ncs.Song[], null, { page: number }>('/songs', async (req, res) => {
-    if (last_refresh >= 1800) {
-        last_refresh = 0
-        await client.getCache()?.checkForNew()
+app.get<null, SongResponse | JsonError, null, { page: number, all: string }>('/songs', async (req, res) => {
+    refesh()
+    if (req.query.all == 'true') {
+        const cache = client.getCache()
+        if (!cache) {
+            res.status(500).json({ error: 'cache not found' })
+            throw 'cache not found'
+        }
+        res.json({
+            lastRefresh,
+            songs: cache.songs
+        })
+    } else {
+        const songs = await client.getSongs(Number(req.query.page ?? 1))
+        res.json({
+            lastRefresh,
+            songs
+        })
     }
-    client.getSongs(Number(req.query.page ?? 1)).then(songs => {
-        res.json(songs)
-    })
 })
 
-app.get<null, ncs.Song[], null, { genre: number, mood: number, search: string, page: number }>('/search', async (req, res) => {
+app.get<null, SongResponse, null, { genre: number, mood: number, search: string, page: number }>('/search', async (req, res) => {
     const filter: ncs.Filter = {
         genre: req.query.genre ? Number(req.query.genre) : undefined,
         mood: req.query.mood ? Number(req.query.mood) : undefined,
@@ -48,13 +78,19 @@ app.get<null, ncs.Song[], null, { genre: number, mood: number, search: string, p
     }
     try {
         const resu = await ncs.search(filter, req.query.page ? Number(req.query.page) : 1)
-        res.json(resu)
+        res.json({
+            lastRefresh,
+            songs: resu
+        })
     } catch (err) {
-        res.json([])
+        res.json({
+            lastRefresh,
+            songs: []
+        })
     }
 })
 
-app.get<null, ncs.Artist_info, null, { url: string }>('/artist', async (req, res) => {
+app.get<null, ncs.Artist_info | JsonError, null, { url: string }>('/artist', async (req, res) => {
     try {
         const url = decodeURIComponent(req.query.url)
         console.log(url)
@@ -68,5 +104,5 @@ app.get<null, ncs.Artist_info, null, { url: string }>('/artist', async (req, res
 if (process.argv.length < 3 || !process.argv[2]) {
     console.error('please add a port! (ncs_api_server 3355)')
 }
-app.listen(Number(process.argv[2]))
+app.listen(Number(process.argv[2] ?? 3355))
 console.log('started surcessfully')
